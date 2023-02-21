@@ -1,6 +1,7 @@
 #include <3ds.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 
 // Animations:
 #include <clear_animations.h>
@@ -10,6 +11,7 @@
 // Terminal Features:
 #include <terminal_menu.h>
 #include <terminal_text.h>
+#include <terminal_art.h>
 
 static SwkbdCallbackResult MyCallback(void* user, const char** ppMessage, const char* text, size_t textlen)
 {
@@ -46,6 +48,27 @@ static SwkbdCallbackResult MyCallback(void* user, const char** ppMessage, const 
 	return SWKBD_CALLBACK_OK;
 }
 
+void printfile(const char* path)
+{
+	FILE* f = fopen(path, "r");
+	if (f)
+	{
+		char mystring[100];
+		while (fgets(mystring, sizeof(mystring), f))
+		{
+			int a = strlen(mystring);
+			if (mystring[a-1] == '\n')
+			{
+				mystring[a-1] = 0;
+				if (mystring[a-2] == '\r')
+					mystring[a-2] = 0;
+			}
+			puts(mystring);
+		}
+		fclose(f);
+	}
+}
+
 int main(int argc, char **argv)
 {
 	// Settings
@@ -60,6 +83,7 @@ int main(int argc, char **argv)
 	bool isNotePadOpen = false;
 	bool isTypingAnEmoji = false;
 	bool isInSettings = false;
+	bool isInArtLibrary = false;
 
 	// Keys
 	char keysNames[32][32] = {
@@ -80,6 +104,15 @@ int main(int argc, char **argv)
 	consoleInit(GFX_BOTTOM, &bottomScreen);
 
 	consoleSelect(&topScreen);
+	Result rc = romfsInit();
+	if (rc)
+		printf("romfsInit: %08lX\n", rc);
+	else
+	{
+		printf("romfs Init Successful!\n");
+		printfile("romfs:/hidden_file.txt");
+		printfile("romfs:/funny_face.txt");
+	}
 	PlayAnimation(1);
 	printf("\033[32mTerminal Loading.\033[0m\n");
 	svcSleepThread(2500000000);
@@ -154,6 +187,38 @@ int main(int argc, char **argv)
 					printf(mybuf);
 					printf("\x1b[0m\n");
 				}
+			}
+		}
+		else if (isInArtLibrary == true){
+			consoleSelect(&bottomScreen);
+			consoleClear();
+			DisplayTerminalMenu(5, false, 0);
+			
+			if (kDown & KEY_A){
+				consoleSelect(&topScreen);
+				consoleClear();
+				DisplayArt(1);
+			}
+			else if (kDown & KEY_B){
+				consoleSelect(&topScreen);
+				consoleClear();
+				DisplayArt(2);
+			}
+			else if (kDown & KEY_X){
+				consoleSelect(&topScreen);
+				consoleClear();
+				DisplayArt(3);
+			}
+			else if (kDown & KEY_Y){
+				consoleSelect(&topScreen);
+				consoleClear();
+				DisplayArt(4);
+			}
+			else if (kDown & KEY_START){
+				consoleSelect(&bottomScreen);
+				consoleClear();
+				DisplayTerminalMenu(1, false, 0);
+				isInArtLibrary = false;
 			}
 		}
 		else if (isInSettings == true){
@@ -300,7 +365,7 @@ int main(int argc, char **argv)
 				DisplayTerminalMenu(1, false, 0);
 			}
 		}
-		else if (isNotePadOpen == false & isInSettings == false){
+		else if (isNotePadOpen == false & isInSettings == false & isInArtLibrary == false){
 			if (kDown & KEY_START) break;
 			else if (kDown & KEY_A){
 				consoleSelect(&bottomScreen);
@@ -361,6 +426,19 @@ int main(int argc, char **argv)
 				consoleSelect(&bottomScreen);
 				consoleClear();
 				DisplayTerminalMenu(1, false, 0);
+			}
+			else if (kDown & KEY_DUP){
+				consoleSelect(&bottomScreen);
+				consoleClear();
+				DisplayTerminalMenu(5, false, 0);
+				consoleSelect(&topScreen);
+				consoleClear();
+				isInArtLibrary = true;
+			}
+			else if (kDown & KEY_R){
+				consoleSelect(&topScreen);
+				consoleClear();
+				printfile("romfs:/hidden_file.txt");
 			}
 		}
 
