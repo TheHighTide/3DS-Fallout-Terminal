@@ -4,18 +4,20 @@ void DisplayTerminalMenu(int menuID, bool slashed, int variation){
     if (menuID == 1){
         if (slashed == true){
             printf("\033[9m");
-            printf("\033[32mA = Display System Info\n");
-	        printf("B = Display Terminal Info\n");
+            printf("\033[32mB = Display System Info\n");
+	        printf("A = Display Terminal Info\n");
             printf("X = Terminal Notepad\n");
             printf("Y = Open Settings\n");
+            printf("UP = Art Library\n");
             printf("SELECT = Clear Screen\033[0m\n");
 	        printf("\x1b[30;1H\033[32mSTART = Exit");
         }
         else if (slashed == false){
-            printf("\033[32mA = Display System Info\n");
-	        printf("B = Display Terminal Info\n");
+            printf("\033[32mB = Display System Info\n");
+	        printf("A = Display Terminal Info\n");
             printf("X = Terminal Notepad\n");
             printf("Y = Open Settings\n");
+            printf("UP = Art Library\n");
             printf("SELECT = Clear Screen\033[0m\n");
 	        printf("\x1b[30;1H\033[32mSTART = Exit\033[0m");
         }
@@ -278,6 +280,21 @@ void DisplayTerminalMenu(int menuID, bool slashed, int variation){
                 printf("Clear Animation = 2\n");
 	            printf("\x1b[30;1HSTART = Exit Settings\033[0m");
             }
+        }
+    }
+    else if (menuID == 5){
+        if (slashed == false){
+            printf("\033[32mA = Art 1\n");
+	        printf("B = Art 2\n");
+            printf("X = Art 3\n");
+	        printf("\x1b[30;1H\033[32mSTART = Exit Art Library");
+        }
+        else if (slashed == true){
+            printf("\033[9m");
+            printf("\033[32mA = Art 1\n");
+	        printf("B = Art 2\n");
+            printf("X = Art 3\n");
+	        printf("\x1b[30;1H\033[32mSTART = Exit Art Library");
         }
     }
     else{
